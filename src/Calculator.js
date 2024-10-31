@@ -4,44 +4,50 @@ import Display from './TDisplay';
 import './Calculator.css';
 
 const Calculator = () => {
-  const [input, setInput] = useState('');
-  const [result, setResult] = useState('');
+  const [displayValue, setDisplayValue] = useState(''); // Estado único para mostrar en el display
+  const [result, setResult] = useState(null); // Estado para almacenar el resultado
 
   const handleClick = (value) => {
-    setInput((prev) => prev + value);
+    setDisplayValue((prev) => prev + value); // Añadir el valor al display
   };
 
   const handleEquals = () => {
     try {
-      setResult(eval(input)); // Evalúa la expresión; ten cuidado al usar `eval`
-      setInput(''); // Limpia el input después de calcular el resultado
+      const calculatedResult = eval(displayValue); // Evalúa la expresión
+      setResult(calculatedResult);
+      setDisplayValue(String(calculatedResult)); // Muestra el resultado en el display
     } catch {
-      setResult('Error');
+      setDisplayValue('Error');
     }
   };
 
   const handleClear = () => {
-    setInput('');
-    setResult('');
+    setDisplayValue(''); // Limpia el display
+    setResult(null); // Limpia el resultado
   };
 
   const handlePercentage = () => {
-    setInput((prev) => String(parseFloat(prev) / 100));
+    try {
+      const percentageResult = parseFloat(displayValue) / 100;
+      setDisplayValue(String(percentageResult)); // Muestra el porcentaje en el display
+    } catch {
+      setDisplayValue('Error');
+    }
   };
 
   return (
     <div className="calculator">
-      <Display input={input} result={result} />
+      <Display input={displayValue} result={result} /> {/* Muestra solo el valor en displayValue */}
       <div className="buttons">
         {['1', '2', '3', '+', '4', '5', '6', '-', '7', '8', '9', '*', '0', '.', '='].map((text) =>
           text === '=' ? (
             <Button key={text} text={text} onClick={handleEquals} />
           ) : (
-            <Button key={text} text={text} onClick={handleClick} />
+            <Button key={text} text={text} onClick={() => handleClick(text)} />
           )
         )}
         <Button text="%" onClick={handlePercentage} />
-        <Button text="/" onClick={handleClick} />
+        <Button text="/" onClick={() => handleClick('/')} />
         <Button text="Clear" onClick={handleClear} />
       </div>
     </div>
